@@ -146,7 +146,7 @@ export default function LoginPage({ onLogin }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 mt-2 inline-flex items-center justify-center gap-2 bg-primary text-white rounded-xl font-semibold text-sm cursor-pointer transition-colors hover:bg-dark-cyan disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full h-12 mt-2 inline-flex items-center justify-center gap-2 bg-blue-900 text-white rounded-xl font-semibold text-sm cursor-pointer transition-colors hover:bg-dark-cyan disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? 'Autenticando...' : <>Entrar <LogIn className="w-4 h-4" /></>}
               </button>

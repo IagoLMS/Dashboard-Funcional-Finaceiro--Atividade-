@@ -21,10 +21,10 @@ const CustomTooltip = ({ active, payload, label }) => {
   if(!active || !payload?.length) return null
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-lg py-2.5 px-3.5">
-      <div className="text-xs text-slate-400 mb-1.5">{label}</div>
+    <div className="bg-white border border-slate-300 rounded-lg py-2.5 px-3.5">
+      <div className="text-xs text-slate-400 mb-2">{label}</div>
       {payload.map((p, i) => (
-        <div key={i} className="text-xs mb-0.5" style={{ color: p.color }}>
+        <div key={i} className="text-xs font-medium mb-0.5" style={{ color: p.color }}>
           {p.name}: <strong>R$ {p.value?.toLocaleString('pt-BR')}</strong>
         </div>
       ))}

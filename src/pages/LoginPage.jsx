@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { Lock, LogIn, Mail, ShieldCheck, TrendingUp, Wallet } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { Lock, LogIn, Mail, ShieldCheck, TrendingUp, User, Wallet } from 'lucide-react';
 
 import logo from '../assets/logotype/logo_reduced.png';
 import logoLight from '../assets/logotype/logo_reduced_light.png';
@@ -39,7 +39,7 @@ const Field = ({ icon: Icon, ...props }) => (
     <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-text/40 pointer-events-none" />
     <input
       {...props}
-      className="w-full h-12 pl-[calc(0.875rem+1.25rem+0.5rem)] pr-4 bg-white/60 border border-text/10 rounded-xl text-sm text-text placeholder:text-text/40 outline-none transition-colors focus:border-primary focus:bg-white"
+      className="w-full h-12 pl-[calc(0.875rem+1.25rem+0.5rem)] pr-4 bg-white/60 border-b-2 border-text/10 rounded-md text-sm text-text placeholder:text-text/40 outline-none transition-colors focus:border-primary focus:bg-white"
     />
   </div>
 )
@@ -65,7 +65,7 @@ export default function LoginPage({ onLogin }) {
 
   return (
     <div className="min-h-screen w-full flex bg-smoke text-text justify-center items-center">
-      <div className="container flex w-full max-w-[70%] h-[750px] border-2 border-gray-200 rounded-3xl shadow-lg overflow-hidden">
+      <div className="container flex w-full max-w-[70%] h-[750px] border-2 border-gray-200 rounded-3xl shadow-2xl overflow-hidden">
 
         {/* ---------------- Coluna esquerda: boas-vindas (60%) ---------------- */}
         <aside className="relative hidden lg:flex lg:w-[60%] flex-col justify-between p-12 xl:p-16 text-white bg-blue-900 h-full gap-12 overflow-hidden">
@@ -118,34 +118,36 @@ export default function LoginPage({ onLogin }) {
                   ⚠ {error}
                 </div>
               )}
-              <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-                <div>
-                  <label htmlFor="email" className="block text-[13px] font-semibold text-text mb-1.5">
-                    E-mail corporativo
-                  </label>
-                  <Field
-                    icon={Mail}
-                    id="email"
-                    type="email"
-                    value={email}
-                    placeholder="seu@empresa.com"
-                    onChange={e => setEmail(e.target.value)}
-                    autoComplete="email"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="password" className="block text-[13px] font-semibold text-text mb-1.5">
-                    Senha
-                  </label>
-                  <Field
-                    icon={Lock}
-                    id="password"
-                    type="password"
-                    value={password}
-                    placeholder="••••••••"
-                    onChange={e => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                  />
+              <form onSubmit={handleSubmit} className="mt-10 space-y-8">
+                <div className='space-y-4'>
+                  <div>
+                    <label htmlFor="email" className="block text-[13px] font-semibold text-text/80 mb-1.5">
+                      E-mail corporativo
+                    </label>
+                    <Field
+                      icon={User}
+                      id="email"
+                      type="email"
+                      value={email}
+                      placeholder="seu@empresa.com"
+                      onChange={e => setEmail(e.target.value)}
+                      autoComplete="email"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="password" className="block text-[13px] font-semibold text-text/80 mb-1.5">
+                      Senha
+                    </label>
+                    <Field
+                      icon={Lock}
+                      id="password"
+                      type="password"
+                      value={password}
+                      placeholder="••••••••"
+                      onChange={e => setPassword(e.target.value)}
+                      autoComplete="current-password"
+                    />
+                  </div>
                 </div>
 
                 <button

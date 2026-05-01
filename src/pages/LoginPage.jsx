@@ -64,11 +64,11 @@ export default function LoginPage({ onLogin }) {
   }
 
   return (
-    <div className="min-h-screen w-full flex bg-white text-text justify-center items-center">
-      <div className="container flex w-full max-w-[70%] h-[750px] border-2 border-gray-100 rounded-3xl shadow-lg overflow-hidden">
+    <div className="min-h-screen w-full flex bg-smoke text-text justify-center items-center">
+      <div className="container flex w-full max-w-[70%] h-[750px] border-2 border-gray-200 rounded-3xl shadow-lg overflow-hidden">
 
         {/* ---------------- Coluna esquerda: boas-vindas (60%) ---------------- */}
-        <aside className="relative hidden lg:flex lg:w-[60%] flex-col justify-start p-12 xl:p-16 text-white bg-blue-900 h-full gap-12 overflow-hidden">
+        <aside className="relative hidden lg:flex lg:w-[60%] flex-col justify-between p-12 xl:p-16 text-white bg-blue-900 h-full gap-12 overflow-hidden">
           <div className="pointer-events-none absolute -top-32 -right-32 w-[420px] h-[420px] rounded-full bg-dark-cyan/30 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-40 -left-24 w-[480px] h-[480px] rounded-full bg-cyan/20 blur-3xl" />
 
@@ -76,23 +76,25 @@ export default function LoginPage({ onLogin }) {
             <img src={logoLight} className='h-14' alt="Start Solidarium Logotype" />
           </div>
 
-          <div className="relative z-10 max-w-xl">
-            <h1 className="text-5xl xl:text-6xl font-bold leading-[1.05] tracking-tight">
-              Gestão<br />Financeira
-            </h1>
-            <p className="mt-6 text-base xl:text-lg text-white/80 leading-relaxed">
-              Acompanhe a saúde financeira da sua empresa com painéis claros,
-              indicadores estratégicos e relatórios prontos para decisão — tudo em um só lugar.
-            </p>
+          <div className="relative z-10">
+            <div className="max-w-xl">
+              <h1 className="text-5xl xl:text-6xl font-semibold text-white/90 leading-[1.05] tracking-tight">
+                Gestão<br /> <span className='text-7xl font-bold text-white'>Financeira</span>
+              </h1>
+              <p className="mt-6 text-base xl:text-lg text-white/80 leading-relaxed">
+                Acompanhe a saúde financeira da sua empresa com painéis claros,
+                indicadores estratégicos e relatórios prontos para decisão — tudo em um só lugar.
+              </p>
+            </div>
 
-            <ul className="mt-10 space-y-5">
+            <ul className="flex justify-between gap-4 mt-8 mb-10">
               {FEATURES.map(({ icon: Icon, title, desc }) => (
-                <li key={title} className="flex items-start gap-4">
+                <li key={title} className="flex flex-col h-full border border-white/10 hover:border-white/40 hover:bg-white/10 transition-all duration-300 rounded-lg gap-4 p-3">
                   <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm border border-white/15">
                     <Icon className="w-5 h-5 text-cyan" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-white">{title}</div>
+                    <div className="text-sm font-semibold text-white mb-0.5">{title}</div>
                     <div className="text-[13px] text-white/70">{desc}</div>
                   </div>
                 </li>
@@ -103,73 +105,75 @@ export default function LoginPage({ onLogin }) {
 
         {/* ---------------- Coluna direita: formulário (40%) ---------------- */}
         <main className="flex flex-col justify-between w-full lg:w-[40%] px-8 sm:px-12 py-10 bg-white">
-          <div>
-            <img src={logo} className='h-14' alt="Start Solidarium Logotype" />
-          </div>
+          <div className="w-full flex flex-col justify-between h-full mx-auto py-4 animate-fade-in">
+            <div>
+              <img src={logo} className='h-14' alt="Start Solidarium Logotype" />
+            </div>
 
-          <div className="w-full mx-auto py-12 animate-fade-in">
-            <h2 className="text-3xl font-bold text-text">Bem-vindo(a) de volta!</h2>
-            <p className="mt-2 text-sm text-text/60">Acesse sua conta para continuar</p>
+            <div className="">
+              <h2 className="text-3xl font-bold text-text">Bem-vindo(a) de volta!</h2>
+              <p className="mt-2 text-sm text-text/60">Acesse sua conta para continuar</p>
+              {error && (
+                <div className="mt-6 py-2.5 px-3.5 bg-red-50 border border-red-200 rounded-lg text-[13px] text-red-700">
+                  ⚠ {error}
+                </div>
+              )}
+              <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+                <div>
+                  <label htmlFor="email" className="block text-[13px] font-semibold text-text mb-1.5">
+                    E-mail corporativo
+                  </label>
+                  <Field
+                    icon={Mail}
+                    id="email"
+                    type="email"
+                    value={email}
+                    placeholder="seu@empresa.com"
+                    onChange={e => setEmail(e.target.value)}
+                    autoComplete="email"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="password" className="block text-[13px] font-semibold text-text mb-1.5">
+                    Senha
+                  </label>
+                  <Field
+                    icon={Lock}
+                    id="password"
+                    type="password"
+                    value={password}
+                    placeholder="••••••••"
+                    onChange={e => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                  />
+                </div>
 
-            {error && (
-              <div className="mt-6 py-2.5 px-3.5 bg-red-50 border border-red-200 rounded-lg text-[13px] text-red-700">
-                ⚠ {error}
-              </div>
-            )}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-12 mt-12 inline-flex items-center justify-center gap-2 bg-blue-900 text-white rounded-xl font-semibold text-sm cursor-pointer transition-colors hover:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Autenticando...' : <>Entrar <LogIn className="w-4 h-4" /></>}
+                </button>
+              </form>
+            </div>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-[13px] font-semibold text-text mb-1.5">
-                  E-mail corporativo
-                </label>
-                <Field
-                  icon={Mail}
-                  id="email"
-                  type="email"
-                  value={email}
-                  placeholder="seu@empresa.com"
-                  onChange={e => setEmail(e.target.value)}
-                  autoComplete="email"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-[13px] font-semibold text-text mb-1.5">
-                  Senha
-                </label>
-                <Field
-                  icon={Lock}
-                  id="password"
-                  type="password"
-                  value={password}
-                  placeholder="••••••••"
-                  onChange={e => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-12 mt-2 inline-flex items-center justify-center gap-2 bg-blue-900 text-white rounded-xl font-semibold text-sm cursor-pointer transition-colors hover:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Autenticando...' : <>Entrar <LogIn className="w-4 h-4" /></>}
-              </button>
-            </form>
-
-            <div className="mt-6 p-3.5 bg-slate-50/10 rounded-lg border border-slate-200">
+            <div className="flex flex-col gap-1 p-3.5 rounded-lg border border-slate-300">
               <div className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.05em] mb-2">
                 Contas de demonstração
               </div>
-              {DEMO_ACCOUNTS.map(([accEmail, role]) => (
-                <div key={accEmail} className="text-xs text-slate-600 mb-1 font-mono">
-                  {accEmail}
-                  <span className="inline-block text-[10px] bg-blue-100 text-blue-700 rounded px-1.5 py-px ml-1.5 font-sans">
-                    {role}
-                  </span>
-                </div>
-              ))}
-              <div className="text-xs text-slate-400 font-mono mt-1.5">Senha: senha123</div>
+
+              <div>
+                {DEMO_ACCOUNTS.map(([accEmail, role]) => (
+                  <div key={accEmail} className="text-xs text-slate-600 mb-1 font-mono">
+                    {accEmail}
+                    <span className="inline-block text-[10px] bg-blue-100 text-blue-700 rounded px-1.5 py-px ml-1.5 font-sans">
+                      {role}
+                    </span>
+                  </div>
+                ))}
+                <div className="text-xs text-slate-400 font-mono mt-1">Senha: senha123</div>
+              </div>
             </div>
           </div>
 

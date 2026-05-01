@@ -22,7 +22,7 @@ export default function Topbar({ page }) {
         <div className="flex items-center gap-2 py-1.5 px-3.5 bg-green-100/30 border border-green-300 rounded-full">
           <div className="w-[7px] h-[7px] rounded-full bg-green-500" />
           <span className="text-[11px] font-medium text-green-800">Saldo Mensal</span>
-          <span className="text-[13px] font-bold text-green-700 font-mono">{fmt(KPI_DATA.lucro)}</span>
+          <span className="text-[12px] font-bold text-green-700">{fmt(KPI_DATA.lucro)}</span>
         </div>
       </div>
     </header>

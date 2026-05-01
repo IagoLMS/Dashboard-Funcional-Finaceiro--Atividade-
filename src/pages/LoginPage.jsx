@@ -68,12 +68,12 @@ export default function LoginPage({ onLogin }) {
       <div className="container flex w-full max-w-[70%] h-[750px] border-2 border-gray-100 rounded-3xl shadow-lg overflow-hidden">
 
         {/* ---------------- Coluna esquerda: boas-vindas (60%) ---------------- */}
-        <aside className="relative hidden lg:flex lg:w-[60%] flex-col justify-start p-12 xl:p-16 text-white bg-blue-900 h-full gap-8 overflow-hidden">
+        <aside className="relative hidden lg:flex lg:w-[60%] flex-col justify-start p-12 xl:p-16 text-white bg-blue-900 h-full gap-12 overflow-hidden">
           <div className="pointer-events-none absolute -top-32 -right-32 w-[420px] h-[420px] rounded-full bg-dark-cyan/30 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-40 -left-24 w-[480px] h-[480px] rounded-full bg-cyan/20 blur-3xl" />
 
-          <div className="relative z-10">
-            <img src={logoLight} className='h-24' alt="Start Solidarium Logotype" />
+          <div className="z-10">
+            <img src={logoLight} className='h-14' alt="Start Solidarium Logotype" />
           </div>
 
           <div className="relative z-10 max-w-xl">
@@ -103,11 +103,11 @@ export default function LoginPage({ onLogin }) {
 
         {/* ---------------- Coluna direita: formulário (40%) ---------------- */}
         <main className="flex flex-col justify-between w-full lg:w-[40%] px-8 sm:px-12 py-10 bg-white">
-          <div className="relative z-10">
-            <img src={logo} className='h-24' alt="Start Solidarium Logotype" />
+          <div>
+            <img src={logo} className='h-14' alt="Start Solidarium Logotype" />
           </div>
 
-          <div className="w-full max-w-sm mx-auto py-12 animate-fade-in">
+          <div className="w-full mx-auto py-12 animate-fade-in">
             <h2 className="text-3xl font-bold text-text">Bem-vindo(a) de volta!</h2>
             <p className="mt-2 text-sm text-text/60">Acesse sua conta para continuar</p>
 

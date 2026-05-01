@@ -1,0 +1,34 @@
+# Dependências
+node_modules/
+
+# Build de produção
+dist/
+dist-ssr/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Variáveis de ambiente locais
+.env
+.env.local
+.env.*.local
+
+# Cache do Vite
+.vite/
+
+# Editores / SO
+.vscode/*
+.cursor/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

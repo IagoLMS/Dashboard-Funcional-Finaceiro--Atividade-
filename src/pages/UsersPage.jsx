@@ -3,109 +3,66 @@ import { getUsers, saveUsers, ROLE_LABELS, DEPT_LIST } from '../utils/data'
 
 const ROLES = ['admin', 'gestor', 'viewer']
 
-const s = {
-  page: { padding: 28, flex: 1, overflowY: 'auto' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
-  addBtn: {
-    padding: '10px 18px', background: '#16a34a', color: '#fff',
-    border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 13,
-    cursor: 'pointer', transition: 'background .2s',
-  },
-  card: { background: '#fff', borderRadius: 12, boxShadow: '0 1px 3px rgba(0,0,0,.07)', overflow: 'hidden', marginBottom: 24 },
-  table: { width: '100%', borderCollapse: 'collapse' },
-  th: { fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.05em', padding: '12px 16px', textAlign: 'left', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' },
-  td: { padding: '12px 16px', fontSize: 13, color: '#374151', borderBottom: '1px solid #f8fafc', verticalAlign: 'middle' },
-  roleBadge: (role) => {
-    const map = { admin: ['#dbeafe','#1d4ed8'], gestor: ['#dcfce7','#16a34a'], viewer: ['#f3f4f6','#374151'] }
-    const [bg, color] = map[role] || map.viewer
-    return { background: bg, color, fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20, display: 'inline-block' }
-  },
-  editBtn: {
-    padding: '5px 12px', background: '#f8fafc', border: '1px solid #e2e8f0',
-    borderRadius: 6, fontSize: 12, cursor: 'pointer', marginRight: 6, color: '#374151',
-    transition: 'all .15s',
-  },
-  delBtn: {
-    padding: '5px 12px', background: '#fff', border: '1px solid #fca5a5',
-    borderRadius: 6, fontSize: 12, cursor: 'pointer', color: '#dc2626',
-    transition: 'all .15s',
-  },
-  // Modal
-  overlay: {
-    position: 'fixed', inset: 0, background: 'rgba(15,23,42,.6)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100,
-    backdropFilter: 'blur(4px)',
-  },
-  modal: {
-    background: '#fff', borderRadius: 14, padding: '28px 28px 24px',
-    width: '100%', maxWidth: 440, boxShadow: '0 20px 50px rgba(0,0,0,.25)',
-  },
-  modalTitle: { fontSize: 18, fontWeight: 700, color: '#0f172a', marginBottom: 20 },
-  label: { display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 5 },
-  input: {
-    width: '100%', padding: '9px 12px', border: '1.5px solid #e2e8f0',
-    borderRadius: 7, fontSize: 13, outline: 'none', color: '#0f172a',
-    background: '#f8fafc', marginBottom: 12, transition: 'border-color .2s',
-  },
-  select: {
-    width: '100%', padding: '9px 12px', border: '1.5px solid #e2e8f0',
-    borderRadius: 7, fontSize: 13, outline: 'none', color: '#0f172a',
-    background: '#f8fafc', marginBottom: 12, cursor: 'pointer',
-  },
-  row: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
-  modalFooter: { display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 },
-  cancelBtn: {
-    padding: '9px 18px', background: '#f8fafc', border: '1px solid #e2e8f0',
-    borderRadius: 7, fontSize: 13, cursor: 'pointer', color: '#374151',
-  },
-  saveBtn: {
-    padding: '9px 18px', background: '#16a34a', border: 'none',
-    borderRadius: 7, fontSize: 13, cursor: 'pointer', color: '#fff', fontWeight: 600,
-  },
-  errMsg: { fontSize: 12, color: '#dc2626', marginBottom: 10, background: '#fee2e2', padding: '8px 12px', borderRadius: 6 },
-  avatar: (role) => {
-    const colors = { admin: '#1d4ed8', gestor: '#16a34a', viewer: '#6b7280' }
-    return {
-      width: 32, height: 32, borderRadius: '50%', background: colors[role] || '#6b7280',
-      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      color: '#fff', fontWeight: 700, fontSize: 12, marginRight: 10,
-    }
-  },
-  nameCell: { display: 'flex', alignItems: 'center' },
-  empty: { textAlign: 'center', padding: '40px', color: '#94a3b8', fontSize: 14 },
+const ROLE_BADGE = {
+  admin:  'bg-blue-100 text-blue-700',
+  gestor: 'bg-green-100 text-green-600',
+  viewer: 'bg-gray-100 text-gray-700',
 }
+
+const ROLE_AVATAR = {
+  admin:  'bg-blue-700',
+  gestor: 'bg-green-600',
+  viewer: 'bg-gray-500',
+}
+
+const fieldClass =
+  'w-full py-[9px] px-3 border-[1.5px] border-slate-200 rounded-[7px] text-[13px] outline-none ' +
+  'text-slate-900 bg-slate-50 mb-3 transition-colors focus:border-green-600'
+
+const thClass =
+  'py-3 px-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.05em] ' +
+  'bg-slate-50 border-b border-slate-200'
+
+const tdClass = 'py-3 px-4 text-[13px] text-gray-700 border-b border-slate-50 align-middle'
 
 const emptyForm = { name: '', email: '', password: '', role: 'viewer', department: 'TI' }
 
 export default function UsersPage() {
-  const [users, setUsers] = useState([])
-  const [modal, setModal] = useState(false)
+  const [users,    setUsers]    = useState([])
+  const [modal,    setModal]    = useState(false)
   const [editUser, setEditUser] = useState(null)
-  const [form, setForm] = useState(emptyForm)
-  const [err, setErr] = useState('')
+  const [form,     setForm]     = useState(emptyForm)
+  const [err,      setErr]      = useState('')
 
   useEffect(() => { setUsers(getUsers()) }, [])
 
+  const close      = () => setModal(false)
   const openCreate = () => { setEditUser(null); setForm(emptyForm); setErr(''); setModal(true) }
-  const openEdit = (u) => { setEditUser(u); setForm({ name: u.name, email: u.email, password: '', role: u.role, department: u.department }); setErr(''); setModal(true) }
-  const close = () => setModal(false)
+  const openEdit   = (u) => {
+    setEditUser(u)
+    setForm({ name: u.name, email: u.email, password: '', role: u.role, department: u.department })
+    setErr('')
+    setModal(true)
+  }
 
   const validate = () => {
-    if (!form.name.trim()) return 'Nome é obrigatório.'
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return 'E-mail inválido.'
-    if (!editUser && !form.password.trim()) return 'Senha é obrigatória.'
-    if (!form.role) return 'Função é obrigatória.'
-    if (!form.department) return 'Departamento é obrigatório.'
-    if (!editUser && users.find(u => u.email === form.email)) return 'E-mail já cadastrado.'
+    if(!form.name.trim()) return 'Nome é obrigatório.'
+    if(!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return 'E-mail inválido.'
+    if(!editUser && !form.password.trim()) return 'Senha é obrigatória.'
+    if(!form.role) return 'Função é obrigatória.'
+    if(!form.department) return 'Departamento é obrigatório.'
+    if(!editUser && users.find(u => u.email === form.email)) return 'E-mail já cadastrado.'
     return null
   }
 
   const save = () => {
     const e = validate()
-    if (e) { setErr(e); return }
+    if(e) { setErr(e); return }
     let updated
-    if (editUser) {
-      updated = users.map(u => u.id === editUser.id ? { ...u, name: form.name, email: form.email, role: form.role, department: form.department, ...(form.password ? { password: form.password } : {}) } : u)
+    if(editUser) {
+      updated = users.map(u => u.id === editUser.id
+        ? { ...u, name: form.name, email: form.email, role: form.role, department: form.department, ...(form.password ? { password: form.password } : {}) }
+        : u)
     } else {
       updated = [...users, { id: Date.now(), name: form.name, email: form.email, password: form.password, role: form.role, department: form.department }]
     }
@@ -113,7 +70,7 @@ export default function UsersPage() {
   }
 
   const del = (id) => {
-    if (!confirm('Excluir este usuário?')) return
+    if(!confirm('Excluir este usuário?')) return
     const updated = users.filter(u => u.id !== id)
     setUsers(updated); saveUsers(updated)
   }
@@ -121,57 +78,69 @@ export default function UsersPage() {
   const f = (k, v) => setForm(p => ({ ...p, [k]: v }))
 
   return (
-    <div style={s.page}>
-      <div style={s.header}>
+    <div className="flex-1 p-7 overflow-y-auto">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <div style={{ fontSize: 13, color: '#64748b' }}>{users.length} usuário{users.length !== 1 ? 's' : ''} cadastrado{users.length !== 1 ? 's' : ''}</div>
+          <div className="text-[13px] text-slate-500">
+            {users.length} usuário{users.length !== 1 ? 's' : ''} cadastrado{users.length !== 1 ? 's' : ''}
+          </div>
         </div>
         <button
-          style={s.addBtn}
           onClick={openCreate}
-          onMouseEnter={e => e.target.style.background = '#15803d'}
-          onMouseLeave={e => e.target.style.background = '#16a34a'}
+          className="py-2.5 px-[18px] bg-green-600 text-white rounded-lg font-bold text-[13px] cursor-pointer transition-colors hover:bg-green-700"
         >
           + Novo Usuário
         </button>
       </div>
 
-      <div style={s.card} className="fade-in">
-        <table style={s.table}>
+      <div className="bg-white rounded-xl shadow-card overflow-hidden mb-6 animate-fade-in">
+        <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th style={s.th}>Usuário</th>
-              <th style={s.th}>E-mail</th>
-              <th style={s.th}>Função</th>
-              <th style={s.th}>Departamento</th>
-              <th style={s.th}>Ações</th>
+              <th className={thClass}>Usuário</th>
+              <th className={thClass}>E-mail</th>
+              <th className={thClass}>Função</th>
+              <th className={thClass}>Departamento</th>
+              <th className={thClass}>Ações</th>
             </tr>
           </thead>
           <tbody>
             {users.length === 0 ? (
-              <tr><td colSpan={5} style={s.empty}>Nenhum usuário encontrado.</td></tr>
+              <tr>
+                <td colSpan={5} className="text-center p-10 text-slate-400 text-sm">
+                  Nenhum usuário encontrado.
+                </td>
+              </tr>
             ) : users.map(u => (
               <tr key={u.id}>
-                <td style={s.td}>
-                  <div style={s.nameCell}>
-                    <span style={s.avatar(u.role)}>{u.name?.[0]?.toUpperCase()}</span>
-                    <span style={{ fontWeight: 600 }}>{u.name}</span>
+                <td className={tdClass}>
+                  <div className="flex items-center">
+                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold text-xs mr-2.5 ${ROLE_AVATAR[u.role] || ROLE_AVATAR.viewer}`}>
+                      {u.name?.[0]?.toUpperCase()}
+                    </span>
+                    <span className="font-semibold">{u.name}</span>
                   </div>
                 </td>
-                <td style={{ ...s.td, fontFamily: 'DM Mono, monospace', fontSize: 12 }}>{u.email}</td>
-                <td style={s.td}><span style={s.roleBadge(u.role)}>{ROLE_LABELS[u.role]}</span></td>
-                <td style={s.td}>{u.department}</td>
-                <td style={s.td}>
+                <td className={`${tdClass} font-mono text-xs`}>{u.email}</td>
+                <td className={tdClass}>
+                  <span className={`inline-block text-[11px] font-bold py-0.5 px-2.5 rounded-full ${ROLE_BADGE[u.role] || ROLE_BADGE.viewer}`}>
+                    {ROLE_LABELS[u.role]}
+                  </span>
+                </td>
+                <td className={tdClass}>{u.department}</td>
+                <td className={tdClass}>
                   <button
-                    style={s.editBtn} onClick={() => openEdit(u)}
-                    onMouseEnter={e => e.target.style.background = '#e2e8f0'}
-                    onMouseLeave={e => e.target.style.background = '#f8fafc'}
-                  >✎ Editar</button>
+                    onClick={() => openEdit(u)}
+                    className="py-[5px] px-3 mr-1.5 bg-slate-50 border border-slate-200 rounded-md text-xs text-gray-700 cursor-pointer transition-all hover:bg-slate-200"
+                  >
+                    ✎ Editar
+                  </button>
                   <button
-                    style={s.delBtn} onClick={() => del(u.id)}
-                    onMouseEnter={e => { e.target.style.background = '#fee2e2' }}
-                    onMouseLeave={e => { e.target.style.background = '#fff' }}
-                  >✕ Excluir</button>
+                    onClick={() => del(u.id)}
+                    className="py-[5px] px-3 bg-white border border-red-300 rounded-md text-xs text-red-600 cursor-pointer transition-all hover:bg-red-100"
+                  >
+                    ✕ Excluir
+                  </button>
                 </td>
               </tr>
             ))}
@@ -180,42 +149,90 @@ export default function UsersPage() {
       </div>
 
       {modal && (
-        <div style={s.overlay} onClick={e => e.target === e.currentTarget && close()}>
-          <div style={s.modal} className="fade-in">
-            <div style={s.modalTitle}>{editUser ? 'Editar Usuário' : 'Novo Usuário'}</div>
-            {err && <div style={s.errMsg}>⚠ {err}</div>}
-            <label style={s.label}>Nome completo</label>
-            <input style={s.input} value={form.name} onChange={e => f('name', e.target.value)} placeholder="João da Silva"
-              onFocus={e => e.target.style.borderColor = '#16a34a'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
-            <div style={s.row}>
+        <div
+          onClick={e => e.target === e.currentTarget && close()}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+        >
+          <div className="w-full max-w-[440px] bg-white rounded-[14px] pt-7 px-7 pb-6 shadow-modal animate-fade-in">
+            <div className="text-lg font-bold text-slate-900 mb-5">
+              {editUser ? 'Editar Usuário' : 'Novo Usuário'}
+            </div>
+
+            {err && (
+              <div className="text-xs text-red-600 mb-2.5 bg-red-100 py-2 px-3 rounded-md">
+                ⚠ {err}
+              </div>
+            )}
+
+            <label className="block text-xs font-semibold text-gray-700 mb-[5px]">Nome completo</label>
+            <input
+              value={form.name}
+              placeholder="João da Silva"
+              onChange={e => f('name', e.target.value)}
+              className={fieldClass}
+            />
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={s.label}>E-mail</label>
-                <input style={s.input} type="email" value={form.email} onChange={e => f('email', e.target.value)} placeholder="joao@empresa.com"
-                  onFocus={e => e.target.style.borderColor = '#16a34a'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                <label className="block text-xs font-semibold text-gray-700 mb-[5px]">E-mail</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  placeholder="joao@empresa.com"
+                  onChange={e => f('email', e.target.value)}
+                  className={fieldClass}
+                />
               </div>
               <div>
-                <label style={s.label}>Senha {editUser && <span style={{ color: '#94a3b8', fontWeight: 400 }}>(opcional)</span>}</label>
-                <input style={s.input} type="password" value={form.password} onChange={e => f('password', e.target.value)} placeholder="••••••••"
-                  onFocus={e => e.target.style.borderColor = '#16a34a'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                <label className="block text-xs font-semibold text-gray-700 mb-[5px]">
+                  Senha {editUser && <span className="text-slate-400 font-normal">(opcional)</span>}
+                </label>
+                <input
+                  type="password"
+                  value={form.password}
+                  placeholder="••••••••"
+                  onChange={e => f('password', e.target.value)}
+                  className={fieldClass}
+                />
               </div>
             </div>
-            <div style={s.row}>
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={s.label}>Função</label>
-                <select style={s.select} value={form.role} onChange={e => f('role', e.target.value)}>
+                <label className="block text-xs font-semibold text-gray-700 mb-[5px]">Função</label>
+                <select
+                  value={form.role}
+                  onChange={e => f('role', e.target.value)}
+                  className={`${fieldClass} cursor-pointer`}
+                >
                   {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                 </select>
               </div>
               <div>
-                <label style={s.label}>Departamento</label>
-                <select style={s.select} value={form.department} onChange={e => f('department', e.target.value)}>
+                <label className="block text-xs font-semibold text-gray-700 mb-[5px]">Departamento</label>
+                <select
+                  value={form.department}
+                  onChange={e => f('department', e.target.value)}
+                  className={`${fieldClass} cursor-pointer`}
+                >
                   {DEPT_LIST.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
               </div>
             </div>
-            <div style={s.modalFooter}>
-              <button style={s.cancelBtn} onClick={close}>Cancelar</button>
-              <button style={s.saveBtn} onClick={save}>{editUser ? 'Salvar alterações' : 'Criar usuário'}</button>
+
+            <div className="flex justify-end gap-2.5 mt-2">
+              <button
+                onClick={close}
+                className="py-[9px] px-[18px] bg-slate-50 border border-slate-200 rounded-[7px] text-[13px] text-gray-700 cursor-pointer transition-colors hover:bg-slate-200"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={save}
+                className="py-[9px] px-[18px] bg-green-600 rounded-[7px] text-[13px] text-white font-semibold cursor-pointer transition-colors hover:bg-green-700"
+              >
+                {editUser ? 'Salvar alterações' : 'Criar usuário'}
+              </button>
             </div>
           </div>
         </div>

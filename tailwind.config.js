@@ -26,8 +26,8 @@ export default {
         login:   '0 20px 60px rgba(0,0,0,.30)',
       },
       keyframes: {
-        'fade-in':  { '0%': { opacity: 0, transform: 'translateY(8px)' }, '100%': { opacity: 1, transform: 'none' } },
-        'slide-in': { '0%': { opacity: 0, transform: 'translateX(-10px)' }, '100%': { opacity: 1, transform: 'none' } },
+        'fade-in':  { '0%': { opacity: 0, transform: 'translateY(8px)' },   '100%': { opacity: 1 } },
+        'slide-in': { '0%': { opacity: 0, transform: 'translateX(-10px)' }, '100%': { opacity: 1 } },
       },
       animation: {
         'fade-in':  'fade-in .3s ease both',

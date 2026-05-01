@@ -4,17 +4,19 @@ import {
 } from 'recharts';
 import { exportPDF } from '../utils/pdfExport';
 import { useAuth } from '../context/AuthContext';
+import { Download, FolderDown, FolderUp } from 'lucide-react';
 import { KPI_DATA, MONTHLY_DATA, DEPARTMENTS } from '../utils/data';
 
 const DEPT_COLORS = ['#1b9d46', '#047fa1', '#F0992D', '#925BEC'];
 
-const fmt   = (v) => 'R$ ' + v.toLocaleString('pt-BR');
+const fmt = (v) => 'R$ ' + v.toLocaleString('pt-BR');
+
 const total = DEPARTMENTS.reduce((s, d) => s + d.value, 0);
 
-const cardClass    = 'bg-white rounded-xl py-5 px-5 flex flex-col gap-2 shadow-card';
+const cardClass    = 'bg-white rounded-xl py-5 px-5 mt-1 flex flex-col gap-2 shadow-card';
 const thClass      = 'pb-2.5 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.05em] border-b border-slate-100';
 const thRightClass = `${thClass} !text-right`;
-const tdClass      = 'py-2.5 text-[14px] text-text/70 font-semibold border-b border-slate-50';
+const tdClass      = 'py-2.5 px-1 text-[14px] text-text/70 font-semibold border-b border-slate-50';
 const tdRightClass = `${tdClass} text-right`;
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -28,6 +30,28 @@ const CustomTooltip = ({ active, payload, label }) => {
           {p.name}: <strong>R$ {p.value?.toLocaleString('pt-BR')}</strong>
         </div>
       ))}
+    </div>
+  )
+}
+
+const KpiCard = (
+  { label, value, color, accent, trend, positive }
+) => {
+  return (
+    <div
+      className={`${cardClass} border-t-[3px] animate-fade-in transition-transform duration-200 ease-out hover:-translate-y-1`}
+      style={{ borderTopColor: accent }}
+    >
+      <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em] mb-2">{label}</div>
+      <div className="text-[26px] font-extrabold leading-none" style={{ color }}>{value}</div>
+      {trend && (
+        <div className={[
+          'inline-flex items-center gap-1 mt-2.5 w-fit text-xs font-semibold py-0.5 px-2 rounded-full',
+          positive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-400',
+        ].join(' ')}>
+          {positive !== undefined ? (positive ? '↑' : '↓') : ''} {trend}
+        </div>
+      )}
     </div>
   )
 }
@@ -47,10 +71,11 @@ export default function DashboardPage() {
       {!isViewer && (
         <div className="flex mb-4">
           <button
+            title='Exportar Relatório PDF'
             onClick={exportPDF}
-            className="ml-auto flex items-center gap-2 py-2.5 px-[18px] bg-slate-900 text-white rounded-lg font-semibold text-[13px] cursor-pointer transition-colors hover:bg-slate-800"
+            className="ml-auto flex items-center gap-3 py-2.5 px-[18px] bg-slate-900 text-white rounded-lg font-semibold text-[13px] cursor-pointer transition-colors hover:bg-slate-800"
           >
-            ⬇ Exportar Relatório PDF
+            <Download size={18} /> Exportar Relatório PDF
           </button>
         </div>
       )}
@@ -116,7 +141,7 @@ export default function DashboardPage() {
                 {DEPARTMENTS.map((dept, i) => {
                   const pct = ((dept.value / total) * 100).toFixed(1)
                   return (
-                    <tr key={dept.name}>
+                    <tr key={dept.name} className='hover:bg-primary/10 duration-500'>
                       <td className={tdClass}>
                         <span className="inline-flex items-center gap-2">
                           <span className="inline-block w-2.5 h-2.5 rounded-[3px]" style={{ background: DEPT_COLORS[i] }} />
@@ -148,25 +173,5 @@ export default function DashboardPage() {
         </>
       )}
     </div>
-  )
-}
-
-function KpiCard({ label, value, color, accent, trend, positive }) {
-  return (
-    <div
-      className={`${cardClass} border-t-[3px] animate-fade-in`}
-      style={{ borderTopColor: accent }}
-    >
-      <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em] mb-2">{label}</div>
-      <div className="text-[26px] font-extrabold leading-none" style={{ color }}>{value}</div>
-      {trend && (
-        <div className={[
-          'inline-flex items-center gap-1 mt-2.5 w-fit text-xs font-semibold py-0.5 px-2 rounded-full',
-          positive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-400',
-        ].join(' ')}>
-          {positive !== undefined ? (positive ? '↑' : '↓') : ''} {trend}
-        </div>
-      )}
-    </div>
-  )
+  );
 }

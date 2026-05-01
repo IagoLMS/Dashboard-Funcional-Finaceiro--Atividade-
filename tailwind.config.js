@@ -7,7 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        canvas: '#f0f2f5',
+        canvas:      '#f0f2f5',
+        text:        '#040B16',
+        cyan:        '#51C7D2',
+        white:       '#EEEEEC',
+        primary:     '#06668F',
+        'dark-cyan': '#0197B2',
       },
       fontFamily: {
         sans: ['"DM Sans"', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],

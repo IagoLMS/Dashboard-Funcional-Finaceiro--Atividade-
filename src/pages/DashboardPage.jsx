@@ -1,24 +1,25 @@
-import { useAuth } from '../context/AuthContext'
-import { KPI_DATA, MONTHLY_DATA, DEPARTMENTS } from '../utils/data'
-import { exportPDF } from '../utils/pdfExport'
 import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
-} from 'recharts'
+} from 'recharts';
+import { exportPDF } from '../utils/pdfExport';
+import { useAuth } from '../context/AuthContext';
+import { KPI_DATA, MONTHLY_DATA, DEPARTMENTS } from '../utils/data';
 
-const DEPT_COLORS = ['#16a34a', '#1d4ed8', '#f59e0b', '#8b5cf6']
+const DEPT_COLORS = ['#16a34a', '#1d4ed8', '#f59e0b', '#8b5cf6'];
 
-const fmt   = (v) => 'R$ ' + v.toLocaleString('pt-BR')
-const total = DEPARTMENTS.reduce((s, d) => s + d.value, 0)
+const fmt   = (v) => 'R$ ' + v.toLocaleString('pt-BR');
+const total = DEPARTMENTS.reduce((s, d) => s + d.value, 0);
 
-const cardClass    = 'bg-white rounded-xl pt-5 px-5 pb-4 shadow-card'
-const thClass      = 'pb-2.5 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.05em] border-b border-slate-100'
-const thRightClass = `${thClass} !text-right`
-const tdClass      = 'py-2.5 text-[13px] text-gray-700 border-b border-slate-50'
-const tdRightClass = `${tdClass} text-right font-mono`
+const cardClass    = 'bg-white rounded-xl pt-5 px-5 pb-4 shadow-card';
+const thClass      = 'pb-2.5 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.05em] border-b border-slate-100';
+const thRightClass = `${thClass} !text-right`;
+const tdClass      = 'py-2.5 text-[13px] text-gray-700 border-b border-slate-50';
+const tdRightClass = `${tdClass} text-right font-mono`;
 
 const CustomTooltip = ({ active, payload, label }) => {
   if(!active || !payload?.length) return null
+  
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-lg py-2.5 px-3.5">
       <div className="text-xs text-slate-400 mb-1.5">{label}</div>

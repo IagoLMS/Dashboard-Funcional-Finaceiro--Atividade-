@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getUsers, saveUsers, ROLE_LABELS, DEPT_LIST } from '../utils/data';
+import { Plus, Users } from 'lucide-react';
 
 const ROLES = ['admin', 'gestor', 'viewer'];
 
@@ -62,8 +63,8 @@ export default function UsersPage() {
       password:   '', 
     });
     
-    setErr('')
-    setModal(true)
+    setErr('');
+    setModal(true);
   };
 
   const validate = () => {
@@ -119,17 +120,18 @@ export default function UsersPage() {
 
   return (
     <div className="flex-1 p-7 overflow-y-auto">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-end mb-6">
         <div>
-          <div className="text-[13px] text-text/80">
+          <div className="text-[13px] font-medium text-text/70 px-2 rounded-md flex items-end gap-2">
+            <Users size={20}/>
             {users.length} usuário{users.length !== 1 ? 's' : ''} cadastrado{users.length !== 1 ? 's' : ''}
           </div>
         </div>
         <button
           onClick={openCreate}
-          className="py-2.5 px-[18px] bg-green-600 text-white rounded-lg font-bold text-[13px] cursor-pointer transition-colors hover:bg-green-700"
+          className="py-2.5 flex gap-2 items-center px-5 bg-blue-900 text-white rounded-lg font-bold text-[13px] cursor-pointer transition-colors hover:bg-blue-800"
         >
-          + Novo Usuário
+          <Plus size={20}/> Novo Usuário
         </button>
       </div>
 
@@ -152,7 +154,7 @@ export default function UsersPage() {
                 </td>
               </tr>
             ) : users.map(u => (
-              <tr key={u.id}>
+              <tr key={u.id} className='hover:bg-primary/10 duration-500 cursor-pointer'>
                 <td className={tdClass}>
                   <div className="flex items-center">
                     <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm mr-2.5 ${ROLE_AVATAR[u.role] || ROLE_AVATAR.viewer}`}>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useDataSource } from '../context/DataSourceContext.jsx';
 import { getRepository }  from '../data/repositories/index.js';
 
@@ -8,7 +8,7 @@ export function usePayables() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
 
-  const repo = getRepository('payables', mode);
+  const repo = useMemo(() => getRepository('payables', mode), [mode]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -21,33 +21,42 @@ export function usePayables() {
     } finally {
       setLoading(false);
     }
-  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [repo]);
 
   useEffect(() => { refresh(); }, [refresh]);
 
-  const create = useCallback(async (data) => {
-    const updated = await repo.create(data);
-    setData(updated);
-    return updated;
-  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  const sync = useCallback(async () => {
+    try {
+      const list = await repo.list();
+      setData(list);
+    } catch(err) {
+      setError(err.message || 'Erro ao sincronizar dados.');
+    }
+  }, [repo]);
+
+  const create = useCallback(async (entry) => {
+    const result = await repo.create(entry);
+    await sync();
+    return result;
+  }, [repo, sync]);
 
   const update = useCallback(async (id, changes) => {
-    const updated = await repo.update(id, changes);
-    setData(updated);
-    return updated;
-  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
+    const result = await repo.update(id, changes);
+    await sync();
+    return result;
+  }, [repo, sync]);
 
   const remove = useCallback(async (id) => {
-    const updated = await repo.remove(id);
-    setData(updated);
-    return updated;
-  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
+    const result = await repo.remove(id);
+    await sync();
+    return result;
+  }, [repo, sync]);
 
   const registerPayment = useCallback(async (id, payment) => {
     const result = await repo.registerPayment(id, payment);
-    if(!result.error) setData(result.updated);
+    if(!result?.error) await sync();
     return result;
-  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [repo, sync]);
 
   return { data, loading, error, refresh, create, update, remove, registerPayment };
 }

@@ -335,3 +335,275 @@ export function registerPayment(id, { amount, date, method }) {
   saveReceivables(updated);
   return { updated, error: null };
 }
+
+// -------- CONTAS A PAGAR --------
+
+export const PAYABLE_ORIGINS = [
+  'NF-e',
+  'Pedido',
+  'Recibo',
+  'Outros',
+  'Contrato',
+  'Nota fiscal',
+];
+
+export const PAYABLE_CATEGORIES = [
+  'Aluguel',
+  'Serviços',
+  'Salários',
+  'Impostos',
+  'Marketing',
+  'Manutenção',
+  'Fornecedores',
+  'Investimentos',
+];
+
+export const PAYABLE_SUPPLIERS = [
+  'ReciclaMax',
+  'BioMar Ind.',
+  'Natura & Cia',
+  'EcoStore Ltda',
+  'SustentaTech',
+  'AgroEco Brasil',
+  'Planeta Verde SA',
+  'Renovar Comércio',
+  'EcoPack Embalagens',
+  'GreenPath Soluções',
+];
+
+/**
+ * Computes the status of a payable based on business rules:
+ *  - balance == 0        → 'paid'
+ *  - overdue + balance>0 → 'overdue'
+ *  - not yet due         → 'pending'
+ */
+export function computePayableStatus(payable) {
+  const balance = (Number(payable.totalValue) || 0) - (Number(payable.paidValue) || 0);
+  if(balance <= 0) return 'paid';
+
+  const todayDate = new Date();
+  todayDate.setHours(0, 0, 0, 0);
+
+  const due = new Date(payable.dueDate + 'T00:00:00');
+  if(due < todayDate) return 'overdue';
+
+  return 'pending';
+}
+
+const INITIAL_PAYABLES = [
+  {
+    id: 201,
+    supplier: 'EcoStore Ltda',
+    origin: 'Pedido',
+    category: 'Fornecedores',
+    totalValue: 8500,
+    paidValue: 8500,
+    issueDate: '2025-04-01',
+    dueDate: '2025-04-15',
+    observation: 'Compra de matéria-prima reciclada',
+    payments: [
+      { id: 9201, date: '2025-04-14', amount: 8500, method: 'transferência' },
+    ],
+  },
+  {
+    id: 202,
+    supplier: 'GreenPath Soluções',
+    origin: 'Contrato',
+    category: 'Serviços',
+    totalValue: 4500,
+    paidValue: 2250,
+    issueDate: '2025-04-05',
+    dueDate: '2025-04-25',
+    observation: 'Consultoria ambiental — parcela 1/2',
+    payments: [
+      { id: 9202, date: '2025-04-10', amount: 2250, method: 'boleto' },
+    ],
+  },
+  {
+    id: 203,
+    supplier: 'Renovar Comércio',
+    origin: 'NF-e',
+    category: 'Fornecedores',
+    totalValue: 12000,
+    paidValue: 0,
+    issueDate: '2025-04-10',
+    dueDate: '2025-05-10',
+    observation: 'Materiais de produção',
+    payments: [],
+  },
+  {
+    id: 204,
+    supplier: 'BioMar Ind.',
+    origin: 'NF-e',
+    category: 'Investimentos',
+    totalValue: 18500,
+    paidValue: 0,
+    issueDate: '2025-03-20',
+    dueDate: '2025-04-05',
+    observation: 'Equipamento de reciclagem',
+    payments: [],
+  },
+  {
+    id: 205,
+    supplier: 'AgroEco Brasil',
+    origin: 'Recibo',
+    category: 'Salários',
+    totalValue: 22000,
+    paidValue: 22000,
+    issueDate: '2025-04-01',
+    dueDate: '2025-04-05',
+    observation: 'Folha de pagamento — Abril',
+    payments: [
+      { id: 9203, date: '2025-04-05', amount: 22000, method: 'transferência' },
+    ],
+  },
+  {
+    id: 206,
+    supplier: 'SustentaTech',
+    origin: 'NF-e',
+    category: 'Aluguel',
+    totalValue: 3500,
+    paidValue: 0,
+    issueDate: '2025-04-25',
+    dueDate: '2025-05-05',
+    observation: 'Aluguel galpão de produção',
+    payments: [],
+  },
+  {
+    id: 207,
+    supplier: 'EcoPack Embalagens',
+    origin: 'Pedido',
+    category: 'Fornecedores',
+    totalValue: 6800,
+    paidValue: 6800,
+    issueDate: '2025-04-08',
+    dueDate: '2025-04-22',
+    observation: 'Embalagens biodegradáveis',
+    payments: [
+      { id: 9204, date: '2025-04-22', amount: 6800, method: 'cartão' },
+    ],
+  },
+  {
+    id: 208,
+    supplier: 'Planeta Verde SA',
+    origin: 'NF-e',
+    category: 'Impostos',
+    totalValue: 4100,
+    paidValue: 0,
+    issueDate: '2025-04-15',
+    dueDate: '2025-04-28',
+    observation: 'ICMS Abril/2025',
+    payments: [],
+  },
+  {
+    id: 209,
+    supplier: 'Natura & Cia',
+    origin: 'Contrato',
+    category: 'Marketing',
+    totalValue: 2800,
+    paidValue: 1400,
+    issueDate: '2025-04-12',
+    dueDate: '2025-05-15',
+    observation: 'Campanha digital — parcela 1/2',
+    payments: [
+      { id: 9205, date: '2025-04-15', amount: 1400, method: 'transferência' },
+    ],
+  },
+  {
+    id: 210,
+    supplier: 'ReciclaMax',
+    origin: 'Pedido',
+    category: 'Serviços',
+    totalValue: 1200,
+    paidValue: 0,
+    issueDate: '2025-04-30',
+    dueDate: '2025-05-12',
+    observation: 'Coleta seletiva mensal',
+    payments: [],
+  },
+];
+
+export function getPayables() {
+  try {
+    const stored = localStorage.getItem('cf_payables');
+    return stored ? JSON.parse(stored) : INITIAL_PAYABLES;
+  } catch { return INITIAL_PAYABLES }
+}
+
+export function savePayables(list) {
+  localStorage.setItem('cf_payables', JSON.stringify(list));
+}
+
+/**
+ * Creates one or multiple payable records.
+ * If installments > 1, generates one record per installment with monthly due dates.
+ */
+export function createPayable(data) {
+  const current      = getPayables();
+  const installments = Number(data.installments) || 1;
+  const perValue     = parseFloat((Number(data.totalValue) / installments).toFixed(2));
+  const newEntries   = [];
+
+  for(let i = 0; i < installments; i++) {
+    const dueDate = addDays(data.dueDate, i * 30);
+    newEntries.push({
+      id:          Date.now() + i,
+      supplier:    data.supplier,
+      origin:      data.origin || '',
+      category:    data.category,
+      totalValue:  perValue,
+      paidValue:   0,
+      issueDate:   today(),
+      dueDate,
+      observation: installments > 1
+        ? `Parcela ${i + 1}/${installments}${data.observation ? ' — ' + data.observation : ''}`
+        : (data.observation || ''),
+      payments: [],
+    });
+  }
+
+  const updated = [...newEntries, ...current];
+  savePayables(updated);
+  return updated;
+}
+
+export function updatePayable(id, data) {
+  const current = getPayables();
+  const updated = current.map(p => p.id === id ? { ...p, ...data } : p);
+  savePayables(updated);
+  return updated;
+}
+
+export function deletePayable(id) {
+  const current = getPayables();
+  const updated = current.filter(p => p.id !== id);
+  savePayables(updated);
+  return updated;
+}
+
+/**
+ * Registers a payment against a payable.
+ * Validates that amount does not exceed balance.
+ * Returns { updated, error } tuple.
+ */
+export function registerPayablePayment(id, { amount, date, method }) {
+  const current = getPayables();
+  const payable = current.find(p => p.id === id);
+  if(!payable) return { updated: current, error: 'Conta não encontrada.' };
+
+  const balance = (Number(payable.totalValue) || 0) - (Number(payable.paidValue) || 0);
+  const amt     = Number(amount) || 0;
+  if(amt <= 0)      return { updated: current, error: 'Valor deve ser maior que zero.' };
+  if(amt > balance) return { updated: current, error: 'Valor não pode ultrapassar o saldo restante.' };
+
+  const newPayment = { id: Date.now(), date, amount: amt, method };
+  const newPaid    = (Number(payable.paidValue) || 0) + amt;
+
+  const updated = current.map(p =>
+    p.id === id
+      ? { ...p, paidValue: newPaid, payments: [...(p.payments || []), newPayment] }
+      : p
+  );
+  savePayables(updated);
+  return { updated, error: null };
+}

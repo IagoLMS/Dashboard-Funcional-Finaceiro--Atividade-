@@ -8,6 +8,7 @@ import Sidebar from './components/Sidebar';
 import CashFlowPage from './pages/CashFlowPage';
 import DashboardPage from './pages/DashboardPage';
 import ReceivablesPage from './pages/ReceivablesPage';
+import PayablesPage from './pages/PayablesPage';
 
 function AppShell() {
   const { user, logout } = useAuth();
@@ -37,6 +38,7 @@ function AppShell() {
           {safePage === 'users' && user.role === 'admin' && <UsersPage key="users" />}
           {safePage === 'cashflow' && <CashFlowPage key="cashflow" />}
           {safePage === 'receivables' && <ReceivablesPage key="receivables" />}
+          {safePage === 'payables' && <PayablesPage key="payables" />}
         </div>
       </div>
     </div>

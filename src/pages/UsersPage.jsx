@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getUsers, saveUsers, ROLE_LABELS, DEPT_LIST } from '../utils/data';
-import { Plus, Users } from 'lucide-react';
+import { Plus, Save, SquarePen, Trash, UserPlus, UserRoundPen, UserRoundPlus, Users } from 'lucide-react';
 
 const ROLES = ['admin', 'gestor', 'viewer'];
 
@@ -18,7 +18,7 @@ const ROLE_AVATAR = {
 
 const fieldClass =
   'w-full py-[9px] px-3 border-[1.5px] border-slate-200 rounded-[7px] text-[13px] outline-none ' +
-  'text-text/80 bg-slate-50 mb-3 transition-colors focus:border-green-600';
+  'text-text/80 bg-slate-50 transition-colors focus:border-primary';
 
 const thClass =
   'py-4 px-4 text-left text-[12px] font-bold text-text/60 uppercase tracking-[0.05em] ' +
@@ -171,18 +171,18 @@ export default function UsersPage() {
                   </span>
                 </td>
                 <td className={tdClass}>{u.department}</td>
-                <td className={tdClass}>
+                <td className={tdClass + ' flex gap-1'}>
                   <button
                     onClick={() => openEdit(u)}
-                    className="py-[5px] px-3 mr-1.5 bg-slate-50 border border-slate-200 rounded-md text-xs text-gray-700 cursor-pointer transition-all hover:bg-slate-200"
+                    className="p-[10px] mr-1.5 flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-md text-xs text-gray-700 cursor-pointer transition-all hover:bg-slate-300"
                   >
-                    ✎ Editar
+                    <SquarePen size={14} /> 
                   </button>
                   <button
                     onClick={() => del(u.id)}
-                    className="py-[5px] px-3 bg-white border border-red-300 rounded-md text-xs text-red-600 cursor-pointer transition-all hover:bg-red-100"
+                    className="p-[10px] flex items-center gap-1.5 bg-white border border-red-300 rounded-md text-xs text-red-600 cursor-pointer transition-all hover:bg-red-100"
                   >
-                    ✕ Excluir
+                    <Trash size={14}/> 
                   </button>
                 </td>
               </tr>
@@ -197,7 +197,7 @@ export default function UsersPage() {
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
         >
           <div className="w-full max-w-[440px] bg-white rounded-[14px] pt-7 px-7 pb-6 shadow-modal animate-fade-in">
-            <div className="text-lg font-bold text-text/80 mb-5">
+            <div className="text-2xl font-bold text-text/80 mb-5">
               {editUser ? 'Editar Usuário' : 'Novo Usuário'}
             </div>
 
@@ -207,73 +207,78 @@ export default function UsersPage() {
               </div>
             )}
 
-            <label className="block text-xs font-semibold text-gray-700 mb-[5px]">Nome completo</label>
-            <input
-              value={form.name}
-              placeholder="João da Silva"
-              onChange={e => f('name', e.target.value)}
-              className={fieldClass}
-            />
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-[5px]">E-mail</label>
+            <div className="space-y-6">
+              <div className="">
+                <label className="block text-xs font-semibold text-gray-700 mb-[5px]">Nome completo</label>
                 <input
-                  type="email"
-                  value={form.email}
-                  placeholder="joao@empresa.com"
-                  onChange={e => f('email', e.target.value)}
+                  value={form.name}
+                  placeholder="João da Silva"
+                  onChange={e => f('name', e.target.value)}
                   className={fieldClass}
                 />
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-[5px]">
-                  Senha {editUser && <span className="text-text/80 font-normal">(opcional)</span>}
-                </label>
-                <input
-                  type="password"
-                  value={form.password}
-                  placeholder="••••••••"
-                  onChange={e => f('password', e.target.value)}
-                  className={fieldClass}
-                />
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-[5px]">E-mail</label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    placeholder="joao@empresa.com"
+                    onChange={e => f('email', e.target.value)}
+                    className={fieldClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-[5px]">
+                    Senha {editUser && <span className="text-text/80 font-normal">(opcional)</span>}
+                  </label>
+                  <input
+                    type="password"
+                    value={form.password}
+                    placeholder="••••••••"
+                    onChange={e => f('password', e.target.value)}
+                    className={fieldClass}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-[5px]">Função</label>
+                  <select
+                    value={form.role}
+                    onChange={e => f('role', e.target.value)}
+                    className={`${fieldClass} cursor-pointer`}
+                  >
+                    {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-[5px]">Departamento</label>
+                  <select
+                    value={form.department}
+                    onChange={e => f('department', e.target.value)}
+                    className={`${fieldClass} cursor-pointer`}
+                  >
+                    {DEPT_LIST.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-[5px]">Função</label>
-                <select
-                  value={form.role}
-                  onChange={e => f('role', e.target.value)}
-                  className={`${fieldClass} cursor-pointer`}
-                >
-                  {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-[5px]">Departamento</label>
-                <select
-                  value={form.department}
-                  onChange={e => f('department', e.target.value)}
-                  className={`${fieldClass} cursor-pointer`}
-                >
-                  {DEPT_LIST.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2.5 mt-2">
+            <div className="flex justify-end gap-2.5 mt-8">
               <button
                 onClick={close}
-                className="py-[9px] px-[18px] bg-slate-50 border border-slate-200 rounded-[7px] text-[13px] text-gray-700 cursor-pointer transition-colors hover:bg-slate-200"
+                className="py-[9px] px-[18px] bg-slate-50 border border-slate-200 rounded-[7px] text-[13px] text-gray-700 cursor-pointer transition-colors hover:bg-slate-200 w-full"
               >
                 Cancelar
               </button>
               <button
                 onClick={save}
-                className="py-[9px] px-[18px] bg-green-600 rounded-[7px] text-[13px] text-white font-semibold cursor-pointer transition-colors hover:bg-green-700"
+                className="py-[9px] px-[18px] bg-green-600 rounded-[7px] text-[13px] text-white font-medium cursor-pointer transition-colors hover:bg-green-700 flex items-center justify-center gap-2 w-full"
               >
+                {editUser ? <Save size={18}/> : <UserRoundPlus size={18} />}
                 {editUser ? 'Salvar alterações' : 'Criar usuário'}
               </button>
             </div>

@@ -36,9 +36,9 @@ const fieldClass = 'w-full py-[9px] px-3 border-[1.5px] border-slate-200 rounded
 const labelClass = 'block text-xs font-semibold text-gray-700 mb-[5px]';
 
 const STATUS_MAP = {
-  paid:    { label: 'Pago',     badge: 'bg-green-100 text-green-700 border border-green-200',   icon: CheckCircle2,   accent: '#1B9D46' },
-  pending: { label: 'Pendente', badge: 'bg-yellow-50 text-yellow-700 border border-yellow-200', icon: Clock,          accent: '#F0992D' },
-  overdue: { label: 'Atrasado', badge: 'bg-red-100 text-red-600 border border-red-200',         icon: AlertTriangle,  accent: '#D71D2D' },
+  paid:    { label: 'Pago',     badge: 'bg-green-100/30 text-green-700 border border-green-200',   icon: CheckCircle2,   accent: '#1B9D46' },
+  pending: { label: 'Pendente', badge: 'bg-yellow-50/30 text-yellow-700 border border-yellow-200', icon: Clock,          accent: '#F0992D' },
+  overdue: { label: 'Atrasado', badge: 'bg-red-100/30 text-red-600 border border-red-200',         icon: AlertTriangle,  accent: '#D71D2D' },
 };
 
 const METHODS = ['transferência', 'cartão', 'dinheiro', 'pix'];
@@ -754,7 +754,7 @@ export default function ReceivablesPage() {
             {filtered.length} resultado{filtered.length !== 1 ? 's' : ''}
           </div>
           {overdueCount > 0 && (
-            <div className="text-[12px] font-semibold text-red-600 bg-red-50 border border-red-200 px-3 py-1 rounded-full flex items-center gap-1.5">
+            <div className="text-[12px] font-semibold text-red-600 bg-red-50/50 border border-red-200 px-3 py-1 rounded-full flex items-center gap-1.5">
               <AlertTriangle size={12} /> {overdueCount} cliente{overdueCount > 1 ? 's' : ''} inadimplente{overdueCount > 1 ? 's' : ''}
             </div>
           )}
@@ -790,7 +790,7 @@ export default function ReceivablesPage() {
                     <td className={tdClass}>
                       <div className="font-semibold text-text/80">{r.client}</div>
                       {r._status === 'overdue' && (
-                        <div className="text-[11px] text-red-500 font-medium">
+                        <div className="text-[11px] text-red-400 font-medium">
                           {Math.abs(days)} dias em atraso
                         </div>
                       )}

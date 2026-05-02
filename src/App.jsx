@@ -5,10 +5,11 @@ import Topbar from './components/Topbar';
 import LoginPage from './pages/LoginPage';
 import UsersPage from './pages/UsersPage';
 import Sidebar from './components/Sidebar';
+import PayablesPage from './pages/PayablesPage';
 import CashFlowPage from './pages/CashFlowPage';
 import DashboardPage from './pages/DashboardPage';
 import ReceivablesPage from './pages/ReceivablesPage';
-import PayablesPage from './pages/PayablesPage';
+import CostCentersPage from './pages/CostCentersPage';
 
 function AppShell() {
   const { user, logout } = useAuth();
@@ -34,11 +35,12 @@ function AppShell() {
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Topbar page={safePage} />
         <div className="flex-1 overflow-y-auto">
-          {safePage === 'dashboard' && <DashboardPage key="dash" />}
-          {safePage === 'users' && user.role === 'admin' && <UsersPage key="users" />}
-          {safePage === 'cashflow' && <CashFlowPage key="cashflow" />}
+          {safePage === 'dashboard'   && <DashboardPage   key="dash" />}
+          {safePage === 'users'       && user.role === 'admin' && <UsersPage key="users" />}
+          {safePage === 'cashflow'    && <CashFlowPage    key="cashflow" />}
           {safePage === 'receivables' && <ReceivablesPage key="receivables" />}
-          {safePage === 'payables' && <PayablesPage key="payables" />}
+          {safePage === 'payables'    && <PayablesPage    key="payables" />}
+          {safePage === 'costcenters' && <CostCentersPage key="costcenters" />}
         </div>
       </div>
     </div>

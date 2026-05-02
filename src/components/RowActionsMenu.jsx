@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useState, useRef, useEffect } from 'react';
 import { Ban, CircleDollarSign, Eye, MoreVertical, Pencil } from 'lucide-react';
 
 const MENU_WIDTH = 210;
@@ -14,9 +14,12 @@ const MENU_GAP   = 6;
  * - Renderizado via React Portal em `document.body` para evitar clipping
  *   por containers com `overflow-hidden` ou `overflow-x-auto`.
  */
-const RowActionsMenu = ({ onView, onEdit, onPay, onCancel, canEdit, canPay, canCancel }) => {
+const RowActionsMenu = (
+  { onView, onEdit, onPay, onCancel, canEdit, canPay, canCancel }
+) => {
   const [open, setOpen] = useState(false);
   const [pos,  setPos]  = useState({ top: 0, left: 0 });
+  
   const btnRef  = useRef(null);
   const menuRef = useRef(null);
 

@@ -607,3 +607,239 @@ export function registerPayablePayment(id, { amount, date, method }) {
   savePayables(updated);
   return { updated, error: null };
 }
+
+// -------- CENTRO DE CUSTOS --------
+
+export const COST_CENTER_TYPES = [
+  { value: 'operacional',    label: 'Operacional' },
+  { value: 'administrativo', label: 'Administrativo' },
+];
+
+/**
+ * Cada centro de custo agrupa uma ou mais categorias de Contas a Pagar.
+ * O custo realizado é a soma de `totalValue` das contas vinculadas.
+ * Cada categoria deve pertencer a no máximo UM centro de custo (evita dupla contagem).
+ */
+const INITIAL_COST_CENTERS = [
+  {
+    id: 301,
+    name: 'Produção',
+    type: 'operacional',
+    budget: 30000,
+    description: 'Insumos, manutenção e fornecedores da linha produtiva.',
+    categories: ['Fornecedores', 'Manutenção'],
+  },
+  {
+    id: 302,
+    name: 'Logística',
+    type: 'operacional',
+    budget: 18000,
+    description: 'Investimentos em equipamentos e infraestrutura logística.',
+    categories: ['Investimentos'],
+  },
+  {
+    id: 303,
+    name: 'Vendas e Marketing',
+    type: 'operacional',
+    budget: 12000,
+    description: 'Campanhas, mídia paga e serviços de aquisição de clientes.',
+    categories: ['Marketing', 'Serviços'],
+  },
+  {
+    id: 304,
+    name: 'Administrativo',
+    type: 'administrativo',
+    budget: 10000,
+    description: 'Aluguel da sede, impostos e despesas operacionais.',
+    categories: ['Aluguel', 'Impostos'],
+  },
+  {
+    id: 305,
+    name: 'Recursos Humanos',
+    type: 'administrativo',
+    budget: 25000,
+    description: 'Folha de pagamento, benefícios e encargos.',
+    categories: ['Salários'],
+  },
+];
+
+export function getCostCenters() {
+  try {
+    const stored = localStorage.getItem('cf_cost_centers');
+    return stored ? JSON.parse(stored) : INITIAL_COST_CENTERS;
+  } catch { return INITIAL_COST_CENTERS }
+}
+
+export function saveCostCenters(list) {
+  localStorage.setItem('cf_cost_centers', JSON.stringify(list));
+}
+
+const isDuplicateName = (list, name, ignoreId = null) =>
+  list.some(c =>
+    c.id !== ignoreId &&
+    c.name.trim().toLowerCase() === name.trim().toLowerCase()
+  );
+
+/**
+ * Validates and creates a cost center.
+ * Returns { updated, error } tuple.
+ */
+export function createCostCenter(data) {
+  const current = getCostCenters();
+
+  if(!data.name?.trim())            return { updated: current, error: 'Nome é obrigatório.' };
+  if(!data.type)                    return { updated: current, error: 'Tipo é obrigatório.' };
+  if(Number(data.budget) <= 0)      return { updated: current, error: 'Orçamento deve ser maior que zero.' };
+  if(isDuplicateName(current, data.name)) return { updated: current, error: 'Já existe um centro de custo com este nome.' };
+
+  const newCenter = {
+    id:          Date.now(),
+    name:        data.name.trim(),
+    type:        data.type,
+    budget:      Number(data.budget),
+    description: (data.description || '').trim(),
+    categories:  Array.isArray(data.categories) ? data.categories : [],
+  };
+
+  const updated = [newCenter, ...current];
+  saveCostCenters(updated);
+  return { updated, error: null };
+}
+
+export function updateCostCenter(id, data) {
+  const current = getCostCenters();
+  const center  = current.find(c => c.id === id);
+  if(!center) return { updated: current, error: 'Centro não encontrado.' };
+
+  if(!data.name?.trim())                      return { updated: current, error: 'Nome é obrigatório.' };
+  if(!data.type)                              return { updated: current, error: 'Tipo é obrigatório.' };
+  if(Number(data.budget) <= 0)                return { updated: current, error: 'Orçamento deve ser maior que zero.' };
+  if(isDuplicateName(current, data.name, id)) return { updated: current, error: 'Já existe um centro de custo com este nome.' };
+
+  const updated = current.map(c => c.id === id ? {
+    ...c,
+    name:        data.name.trim(),
+    type:        data.type,
+    budget:      Number(data.budget),
+    description: (data.description || '').trim(),
+    categories:  Array.isArray(data.categories) ? data.categories : c.categories,
+  } : c);
+
+  saveCostCenters(updated);
+  return { updated, error: null };
+}
+
+/**
+ * Deletes a cost center.
+ * Blocks deletion if there are payables (transactions) linked.
+ */
+export function deleteCostCenter(id) {
+  const current  = getCostCenters();
+  const center   = current.find(c => c.id === id);
+  if(!center) return { updated: current, error: 'Centro não encontrado.' };
+
+  const linked = getPayables().filter(p => (center.categories || []).includes(p.category));
+  if(linked.length > 0) {
+    return {
+      updated: current,
+      error: `Não é possível excluir: existem ${linked.length} transação(ões) vinculada(s) a este centro.`,
+    };
+  }
+
+  const updated = current.filter(c => c.id !== id);
+  saveCostCenters(updated);
+  return { updated, error: null };
+}
+
+/**
+ * Returns the analytical breakdown of a single cost center:
+ *  - currentCost          : soma de totalValue dos payables vinculados
+ *  - paidCost             : soma de paidValue dos payables vinculados
+ *  - percentage           : currentCost / budget
+ *  - status               : 'within' | 'warning' | 'over'
+ *  - difference           : currentCost - budget (negativo = sobra)
+ *  - transactions         : payables vinculadas (ordenadas por data desc)
+ *  - monthlyEvolution     : [{ mes, custo }] para gráfico
+ */
+export function getCostCenterAnalysis(id) {
+  const center = getCostCenters().find(c => c.id === id);
+  if(!center) return null;
+
+  const linked = getPayables()
+    .filter(p => (center.categories || []).includes(p.category))
+    .sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate));
+
+  const currentCost = linked.reduce((s, p) => s + (Number(p.totalValue) || 0), 0);
+  const paidCost    = linked.reduce((s, p) => s + (Number(p.paidValue)  || 0), 0);
+  const budget      = Number(center.budget) || 0;
+  const percentage  = budget > 0 ? (currentCost / budget) : 0;
+
+  let status = 'within';
+  if(percentage > 1)        status = 'over';
+  else if(percentage > 0.8) status = 'warning';
+
+  // Monthly evolution from issueDate
+  const monthlyMap = {};
+  linked.forEach(p => {
+    if(!p.issueDate) return;
+    const d   = new Date(p.issueDate + 'T00:00:00');
+    const key = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+    if(!monthlyMap[key]) monthlyMap[key] = { mes: key, custo: 0, sortKey: d.getFullYear() * 12 + d.getMonth() };
+    monthlyMap[key].custo += Number(p.totalValue) || 0;
+  });
+  const monthlyEvolution = Object.values(monthlyMap)
+    .sort((a, b) => a.sortKey - b.sortKey)
+    .map(({ sortKey, ...rest }) => rest); // eslint-disable-line no-unused-vars
+
+  const transactions = linked.map(p => ({
+    id:          p.id,
+    date:        p.issueDate,
+    origin:      p.supplier,
+    category:    p.category,
+    value:       Number(p.totalValue) || 0,
+    paid:        Number(p.paidValue)  || 0,
+    description: p.observation || '',
+  }));
+
+  return {
+    center,
+    paidCost,
+    currentCost,
+    percentage,
+    status,
+    transactions,
+    monthlyEvolution,
+    difference: currentCost - budget,
+  };
+}
+
+/**
+ * Computes monthly cost variation across ALL centers
+ * (used by KPI "Variação vs mês anterior").
+ */
+export function getCostCentersMonthlyVariation() {
+  const payables = getPayables();
+  const linkedCategories = new Set(
+    getCostCenters().flatMap(c => c.categories || [])
+  );
+
+  const now      = new Date();
+  const curMonth = now.getMonth();
+  const curYear  = now.getFullYear();
+  const prev     = new Date(curYear, curMonth - 1, 1);
+
+  const sumByMonth = (m, y) => payables
+    .filter(p => linkedCategories.has(p.category))
+    .filter(p => {
+      if(!p.issueDate) return false;
+      const d = new Date(p.issueDate + 'T00:00:00');
+      return d.getMonth() === m && d.getFullYear() === y;
+    })
+    .reduce((s, p) => s + (Number(p.totalValue) || 0), 0);
+
+  const current  = sumByMonth(curMonth, curYear);
+  const previous = sumByMonth(prev.getMonth(), prev.getFullYear());
+  const variation = previous > 0 ? ((current - previous) / previous) * 100 : 0;
+
+  return { current, previous, variation };
+}

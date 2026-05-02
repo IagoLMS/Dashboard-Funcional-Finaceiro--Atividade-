@@ -7,6 +7,7 @@ import UsersPage from './pages/UsersPage';
 import Sidebar from './components/Sidebar';
 import CashFlowPage from './pages/CashFlowPage';
 import DashboardPage from './pages/DashboardPage';
+import ReceivablesPage from './pages/ReceivablesPage';
 
 function AppShell() {
   const { user, logout } = useAuth();
@@ -35,6 +36,7 @@ function AppShell() {
           {safePage === 'dashboard' && <DashboardPage key="dash" />}
           {safePage === 'users' && user.role === 'admin' && <UsersPage key="users" />}
           {safePage === 'cashflow' && <CashFlowPage key="cashflow" />}
+          {safePage === 'receivables' && <ReceivablesPage key="receivables" />}
         </div>
       </div>
     </div>

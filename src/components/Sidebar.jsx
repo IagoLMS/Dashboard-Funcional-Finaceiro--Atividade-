@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { House, LogOut, TrendingUp, UserCog } from 'lucide-react';
+import { House, LogOut, TrendingUp, UserCog, Wallet } from 'lucide-react';
 
 import logoLight from "../assets/logotype/logo_reduced_light.png";
 
@@ -10,9 +10,10 @@ const ROLE_LABELS = {
 };
 
 const NAV_ITEMS = [
-  { id: 'dashboard', icon: House, label: 'Dashboard',            roles: ['admin', 'gestor', 'viewer'] },
-  { id: 'users',     icon: UserCog, label: 'Gestão de Usuários', roles: ['admin'] },
-  { id: 'cashflow',  icon: TrendingUp, label: 'Fluxo de Caixa',  roles: ['admin', 'gestor'] },
+  { id: 'dashboard',   icon: House,      label: 'Dashboard',          roles: ['admin', 'gestor', 'viewer'] },
+  { id: 'users',       icon: UserCog,    label: 'Gestão de Usuários', roles: ['admin'] },
+  { id: 'cashflow',    icon: TrendingUp, label: 'Fluxo de Caixa',     roles: ['admin', 'gestor'] },
+  { id: 'receivables', icon: Wallet,     label: 'Contas a Receber',   roles: ['admin', 'gestor'] },
 ];
 
 const navItemClass = (active) => [

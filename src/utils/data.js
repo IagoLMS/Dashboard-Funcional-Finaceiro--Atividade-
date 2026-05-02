@@ -110,3 +110,228 @@ export function deleteCashFlowEntry(id) {
   saveCashFlow(updated);
   return updated;
 }
+
+// -------- CONTAS A RECEBER --------
+
+export const RECEIVABLE_CLIENTS = [
+  'EcoStore Ltda',
+  'GreenPath Soluções',
+  'Natura & Cia',
+  'BioMar Ind.',
+  'Renovar Comércio',
+  'SustentaTech',
+  'Planeta Verde SA',
+  'AgroEco Brasil',
+  'ReciclaMax',
+  'EcoPack Embalagens',
+];
+
+/**
+ * Computes the status of a receivable based on business rules:
+ *  - balance == 0        → 'paid'
+ *  - overdue + balance>0 → 'overdue'
+ *  - not yet due         → 'pending'
+ */
+export function computeReceivableStatus(receivable) {
+  const balance = (Number(receivable.totalValue) || 0) - (Number(receivable.paidValue) || 0);
+  if(balance <= 0) return 'paid';
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const due = new Date(receivable.dueDate + 'T00:00:00');
+  if(due < today) return 'overdue';
+
+  return 'pending';
+}
+
+const today = () => new Date().toISOString().slice(0, 10);
+const addDays = (dateStr, days) => {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  
+  return d.toISOString().slice(0, 10);
+};
+
+const INITIAL_RECEIVABLES = [
+  {
+    id: 101,
+    client: 'EcoStore Ltda',
+    origin: 'Pedido #1042',
+    totalValue: 18500,
+    paidValue: 18500,
+    issueDate: '2025-04-01',
+    dueDate: '2025-04-15',
+    observation: 'Pagamento antecipado',
+    payments: [
+      { id: 9001, date: '2025-04-10', amount: 18500, method: 'transferência' },
+    ],
+  },
+  {
+    id: 102,
+    client: 'GreenPath Soluções',
+    origin: 'Contrato #GP-07',
+    totalValue: 7800,
+    paidValue: 3000,
+    issueDate: '2025-04-05',
+    dueDate: '2025-04-20',
+    observation: 'Pagamento parcial recebido',
+    payments: [
+      { id: 9002, date: '2025-04-15', amount: 3000, method: 'transferência' },
+    ],
+  },
+  {
+    id: 103,
+    client: 'Natura & Cia',
+    origin: 'NF-e 3812',
+    totalValue: 22000,
+    paidValue: 0,
+    issueDate: '2025-03-20',
+    dueDate: '2025-04-05',
+    observation: '',
+    payments: [],
+  },
+  {
+    id: 104,
+    client: 'BioMar Ind.',
+    origin: 'Pedido #1058',
+    totalValue: 11200,
+    paidValue: 0,
+    issueDate: '2025-05-01',
+    dueDate: '2025-05-20',
+    observation: 'Linha premium',
+    payments: [],
+  },
+  {
+    id: 105,
+    client: 'ReciclaMax',
+    origin: 'Workshop Abril',
+    totalValue: 3500,
+    paidValue: 3500,
+    issueDate: '2025-04-28',
+    dueDate: '2025-04-30',
+    observation: '35 participantes',
+    payments: [
+      { id: 9003, date: '2025-04-29', amount: 3500, method: 'cartão' },
+    ],
+  },
+  {
+    id: 106,
+    client: 'SustentaTech',
+    origin: 'Serviço #ST-22',
+    totalValue: 9200,
+    paidValue: 0,
+    issueDate: '2025-03-12',
+    dueDate: '2025-03-30',
+    observation: 'Inadimplente — 2ª cobrança enviada',
+    payments: [],
+  },
+  {
+    id: 107,
+    client: 'EcoPack Embalagens',
+    origin: 'NF-e 4021',
+    totalValue: 15000,
+    paidValue: 7500,
+    issueDate: '2025-04-10',
+    dueDate: '2025-05-10',
+    observation: 'Parcela 1 recebida',
+    payments: [
+      { id: 9004, date: '2025-04-25', amount: 7500, method: 'transferência' },
+    ],
+  },
+  {
+    id: 108,
+    client: 'AgroEco Brasil',
+    origin: 'Pedido #1019',
+    totalValue: 6400,
+    paidValue: 0,
+    issueDate: '2025-03-01',
+    dueDate: '2025-03-18',
+    observation: 'Em negociação',
+    payments: [],
+  },
+];
+
+export function getReceivables() {
+  try {
+    const stored = localStorage.getItem('cf_receivables');
+    return stored ? JSON.parse(stored) : INITIAL_RECEIVABLES;
+  } catch { return INITIAL_RECEIVABLES }
+}
+
+export function saveReceivables(list) {
+  localStorage.setItem('cf_receivables', JSON.stringify(list));
+}
+
+/**
+ * Creates one or multiple receivable records.
+ * Ifinstallments > 1, generates one record per installment.
+ */
+export function createReceivable(data) {
+  const current = getReceivables();
+  const installments = Number(data.installments) || 1;
+  const perValue = parseFloat((Number(data.totalValue) / installments).toFixed(2));
+  const newEntries = [];
+
+  for (let i = 0; i < installments; i++) {
+    const dueDate = addDays(data.dueDate, i * 30);
+    newEntries.push({
+      id: Date.now() + i,
+      client: data.client,
+      origin: data.origin || '',
+      totalValue: perValue,
+      paidValue: 0,
+      issueDate: today(),
+      dueDate,
+      observation: installments > 1
+        ? `Parcela ${i + 1}/${installments}${data.observation ? ' — ' + data.observation : ''}`
+        : (data.observation || ''),
+      payments: [],
+    });
+  }
+
+  const updated = [...newEntries, ...current];
+  saveReceivables(updated);
+  return updated;
+}
+
+export function updateReceivable(id, data) {
+  const current = getReceivables();
+  const updated = current.map(r => r.id === id ? { ...r, ...data } : r);
+  saveReceivables(updated);
+  return updated;
+}
+
+export function deleteReceivable(id) {
+  const current = getReceivables();
+  const updated = current.filter(r => r.id !== id);
+  saveReceivables(updated);
+  return updated;
+}
+
+/**
+ * Registers a payment against a receivable.
+ * Validates that amount does not exceed balance.
+ * Returns { updated, error } tuple.
+ */
+export function registerPayment(id, { amount, date, method }) {
+  const current = getReceivables();
+  const receivable = current.find(r => r.id === id);
+  if(!receivable) return { updated: current, error: 'Conta não encontrada.' };
+
+  const balance = (Number(receivable.totalValue) || 0) - (Number(receivable.paidValue) || 0);
+  const amt = Number(amount) || 0;
+  if(amt <= 0) return { updated: current, error: 'Valor deve ser maior que zero.' };
+  if(amt > balance) return { updated: current, error: 'Valor não pode ultrapassar o saldo restante.' };
+
+  const newPayment = { id: Date.now(), date, amount: amt, method };
+  const newPaid = (Number(receivable.paidValue) || 0) + amt;
+
+  const updated = current.map(r =>
+    r.id === id
+      ? { ...r, paidValue: newPaid, payments: [...(r.payments || []), newPayment] }
+      : r
+  );
+  saveReceivables(updated);
+  return { updated, error: null };
+}

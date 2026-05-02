@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getUsers, saveUsers, ROLE_LABELS, DEPT_LIST } from '../utils/data';
-import { Plus, Save, SquarePen, Trash, UserPlus, UserRoundPen, UserRoundPlus, Users } from 'lucide-react';
+import { Plus, Save, SquarePen, Trash, UserRoundPlus, Users } from 'lucide-react';
 
 const ROLES = ['admin', 'gestor', 'viewer'];
 

@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import { exportPDF } from '../utils/pdfExport';
 import { useAuth } from '../context/AuthContext';
-import { Download, FolderDown, FolderUp } from 'lucide-react';
+import { Download, FolderDown, FolderUp, Info } from 'lucide-react';
 import { KPI_DATA, MONTHLY_DATA, DEPARTMENTS } from '../utils/data';
 
 const DEPT_COLORS = ['#1b9d46', '#047fa1', '#F0992D', '#925BEC'];
@@ -63,8 +63,8 @@ export default function DashboardPage() {
   return (
     <div className="flex-1 min-h-0 p-7 overflow-y-auto">
       {isViewer && (
-        <div className="mb-6 py-3.5 px-[18px] bg-yellow-100 border border-yellow-300 rounded-[10px] text-[13px] text-yellow-900 animate-fade-in">
-          ℹ️ Você está em modo <strong>Visualizador</strong>. Apenas métricas básicas estão disponíveis.
+        <div className="mb-6 py-3.5 px-[18px] bg-yellow-50 border border-yellow-500/40 rounded-[10px] text-[14px] text-yellow-800 flex items-center gap-2 animate-fade-in">
+          <Info size={20} /> Você está em modo <strong>Visualizador.</strong> Apenas métricas básicas estão disponíveis.
         </div>
       )}
 

@@ -65,10 +65,10 @@ export default function LoginPage({ onLogin }) {
 
   return (
     <div className="min-h-screen w-full flex bg-smoke text-text justify-center items-center">
-      <div className="container flex w-full max-w-[70%] h-[750px] border-2 border-gray-200 rounded-3xl shadow-2xl overflow-hidden">
+      <div className="container flex w-full max-w-[70%] h-[750px] rounded-3xl shadow-2xl overflow-hidden">
 
         {/* ---------------- Coluna esquerda: boas-vindas (60%) ---------------- */}
-        <aside className="relative hidden lg:flex lg:w-[60%] flex-col justify-between p-12 xl:p-16 text-white bg-blue-900 h-full gap-12 overflow-hidden">
+        <aside className="relative hidden lg:flex lg:w-[57%] flex-col justify-between p-12 xl:p-16 text-white bg-blue-900 h-full gap-12 overflow-hidden">
           <div className="pointer-events-none absolute -top-32 -right-32 w-[420px] h-[420px] rounded-full bg-dark-cyan/30 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-40 -left-24 w-[480px] h-[480px] rounded-full bg-cyan/20 blur-3xl" />
 
@@ -104,15 +104,20 @@ export default function LoginPage({ onLogin }) {
         </aside>
 
         {/* ---------------- Coluna direita: formulário (40%) ---------------- */}
-        <main className="flex flex-col justify-between w-full lg:w-[40%] px-8 sm:px-12 py-10 bg-white">
+        <main className="flex flex-col justify-between w-full lg:w-[43%] px-8 sm:px-16 py-10 bg-white">
           <div className="w-full flex flex-col justify-between h-full mx-auto py-4 animate-fade-in">
             <div>
               <img src={logo} className='h-14' alt="Start Solidarium Logotype" />
             </div>
 
             <div className="">
-              <h2 className="text-3xl font-bold text-text">Bem-vindo(a) de volta!</h2>
-              <p className="mt-2 text-sm text-text/60">Acesse sua conta para continuar</p>
+              <h2 className="text-3xl font-bold text-text/80">
+                Bem-vindo(a) de volta!
+              </h2>
+              <p className="mt-2 text-sm text-text/60">
+                Acesse sua conta para continuar.
+              </p>
+
               {error && (
                 <div className="mt-6 py-2.5 px-3.5 bg-red-50 border border-red-200 rounded-lg text-[13px] text-red-700">
                   ⚠ {error}

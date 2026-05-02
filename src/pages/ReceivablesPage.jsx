@@ -10,6 +10,7 @@ import {
   deleteReceivable, registerPayment, computeReceivableStatus,
   RECEIVABLE_CLIENTS,
 } from '../utils/data';
+import { exportReceivablesPDF } from '../utils/pdfExport';
 
 // -------- Helpers --------
 
@@ -645,6 +646,23 @@ export default function ReceivablesPage() {
     else setDateErr('');
   };
 
+  const handleExport = () => {
+    exportReceivablesPDF({
+      items:   filtered,
+      filters: { search, status: statusF, dateFrom, dateTo },
+      kpis:    {
+        totalCount:        enriched.length,
+        openCount:         enriched.filter(r => r._status !== 'paid').length,
+        overdueCount,
+        defaultRate,
+        totalOpen,
+        totalOverdue,
+        totalReceivable,
+        totalReceivedMonth,
+      },
+    });
+  };
+
   // -------- Row action guards --------
 
   const canEdit   = (r) => r._status !== 'paid';
@@ -682,8 +700,9 @@ export default function ReceivablesPage() {
             <Filter size={15} /> Filtros {showFilter ? <ChevronDown size={13} className="rotate-180" /> : <ChevronDown size={13} />}
           </button>
           <button
+            onClick={handleExport}
+            title="Exportar relatório em PDF"
             className="flex items-center gap-2 py-2.5 px-4 bg-white border border-slate-200 text-gray-700 rounded-lg text-[13px] font-semibold cursor-pointer hover:bg-slate-50 transition-colors"
-            title="Exportar (mock)"
           >
             <Download size={15} /> Exportar
           </button>

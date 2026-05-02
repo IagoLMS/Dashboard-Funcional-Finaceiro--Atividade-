@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id         Int    @id @default(autoincrement())
+  name       String
+  email      String @unique
+  role       String
+  department String
+}
+
+model CashFlowEntry {
+  id          Int    @id @default(autoincrement())
+  date        String
+  description String
+  category    String
+  type        String
+  value       Float
+  status      String
+  origin      String
+  observation String @default("")
+}
+
+model Receivable {
+  id          Int                  @id @default(autoincrement())
+  client      String
+  origin      String               @default("")
+  totalValue  Float
+  paidValue   Float                @default(0)
+  issueDate   String
+  dueDate     String
+  observation String               @default("")
+  payments    ReceivablePayment[]
+}
+
+model ReceivablePayment {
+  id           Int        @id @default(autoincrement())
+  receivableId Int
+  date         String
+  amount       Float
+  method       String
+  receivable   Receivable @relation(fields: [receivableId], references: [id], onDelete: Cascade)
+}
+
+model Payable {
+  id          Int              @id @default(autoincrement())
+  supplier    String
+  origin      String
+  category    String
+  totalValue  Float
+  paidValue   Float            @default(0)
+  issueDate   String
+  dueDate     String
+  observation String           @default("")
+  payments    PayablePayment[]
+}
+
+model PayablePayment {
+  id        Int     @id @default(autoincrement())
+  payableId Int
+  date      String
+  amount    Float
+  method    String
+  payable   Payable @relation(fields: [payableId], references: [id], onDelete: Cascade)
+}
+
+model CostCenter {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  type        String
+  budget      Float
+  description String @default("")
+  categories  String @default("[]")
+}

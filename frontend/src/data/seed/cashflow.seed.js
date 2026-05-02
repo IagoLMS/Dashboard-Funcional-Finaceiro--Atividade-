@@ -1,0 +1,30 @@
+export const CASH_FLOW_CATEGORIES = [
+  'Vendas',
+  'Serviços',
+  'Investimentos',
+  'Fornecedores',
+  'Salários',
+  'Aluguel',
+  'Impostos',
+  'Marketing',
+  'Manutenção',
+  'Outros',
+];
+
+export const INITIAL_CASH_FLOW = [
+  { id: 1,  date: '2025-04-01', description: 'Venda de produtos sustentáveis',    category: 'Vendas',        type: 'income',  value: 18500, status: 'confirmed', origin: 'sistema',  observation: 'Pedido #1042' },
+  { id: 2,  date: '2025-04-02', description: 'Pagamento de fornecedor EcoMat',    category: 'Fornecedores',  type: 'expense', value: 5200,  status: 'confirmed', origin: 'manual',   observation: '' },
+  { id: 3,  date: '2025-04-03', description: 'Folha de pagamento — Abril',        category: 'Salários',      type: 'expense', value: 12000, status: 'confirmed', origin: 'sistema',  observation: 'Processado via RH' },
+  { id: 4,  date: '2025-04-05', description: 'Consultoria ambiental',             category: 'Serviços',      type: 'income',  value: 7800,  status: 'confirmed', origin: 'manual',   observation: 'Projeto GreenPath' },
+  { id: 5,  date: '2025-04-07', description: 'Aluguel galpão produção',           category: 'Aluguel',       type: 'expense', value: 3500,  status: 'confirmed', origin: 'sistema',  observation: '' },
+  { id: 6,  date: '2025-04-10', description: 'Campanha marketing digital',        category: 'Marketing',     type: 'expense', value: 1800,  status: 'confirmed', origin: 'manual',   observation: 'Meta Ads Abril' },
+  { id: 7,  date: '2025-04-12', description: 'Receita de serviços de reciclagem', category: 'Serviços',      type: 'income',  value: 9200,  status: 'confirmed', origin: 'sistema',  observation: '' },
+  { id: 8,  date: '2025-04-15', description: 'Pagamento ICMS Abril',              category: 'Impostos',      type: 'expense', value: 4100,  status: 'confirmed', origin: 'sistema',  observation: '' },
+  { id: 9,  date: '2025-04-18', description: 'Venda lote especial embalagens',    category: 'Vendas',        type: 'income',  value: 22000, status: 'confirmed', origin: 'manual',   observation: 'Cliente: EcoStore' },
+  { id: 10, date: '2025-04-20', description: 'Manutenção equipamentos',           category: 'Manutenção',    type: 'expense', value: 2300,  status: 'pending',   origin: 'manual',   observation: 'Aguardando NF' },
+  { id: 11, date: '2025-04-22', description: 'Aporte de investidor',              category: 'Investimentos', type: 'income',  value: 15000, status: 'confirmed', origin: 'manual',   observation: 'Rodada seed' },
+  { id: 12, date: '2025-04-25', description: 'Compra matéria-prima reciclada',    category: 'Fornecedores',  type: 'expense', value: 6800,  status: 'pending',   origin: 'sistema',  observation: '' },
+  { id: 13, date: '2025-04-28', description: 'Receita workshop sustentabilidade', category: 'Serviços',      type: 'income',  value: 3500,  status: 'confirmed', origin: 'manual',   observation: '35 participantes' },
+  { id: 14, date: '2025-04-30', description: 'Despesas diversas administrativas', category: 'Outros',        type: 'expense', value: 900,   status: 'confirmed', origin: 'manual',   observation: '' },
+  { id: 15, date: '2025-05-01', description: 'Venda produtos linha premium',      category: 'Vendas',        type: 'income',  value: 11200, status: 'pending',   origin: 'sistema',  observation: 'Pedido #1058' },
+];

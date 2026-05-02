@@ -1,18 +1,21 @@
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
-import { KPI_DATA, DEPARTMENTS } from './data'
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { KPI_DATA, DEPARTMENTS } from './data';
 
 export function exportPDF() {
-  const doc = new jsPDF()
-  const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
+  const doc = new jsPDF();
+  const now = new Date().toLocaleDateString(
+    'pt-BR', 
+    { day: '2-digit', month: 'long', year: 'numeric' }
+  );
 
   // Header bar
-  doc.setFillColor(15, 23, 42)
+  doc.setFillColor(17, 73, 126)
   doc.rect(0, 0, 210, 28, 'F')
   doc.setTextColor(255, 255, 255)
   doc.setFontSize(18)
   doc.setFont('helvetica', 'bold')
-  doc.text('CorpFinance', 14, 13)
+  doc.text('Start Solidarium', 14, 13)
   doc.setFontSize(9)
   doc.setFont('helvetica', 'normal')
   doc.text('Relatório Financeiro Mensal', 14, 21)
@@ -36,7 +39,7 @@ export function exportPDF() {
     startY: 45,
     head: [['Indicador', 'Valor', 'Variação']],
     body: kpis,
-    headStyles: { fillColor: [22, 163, 74], textColor: 255, fontStyle: 'bold' },
+    headStyles: { fillColor: [27, 157, 70], textColor: 255, fontStyle: 'bold' },
     alternateRowStyles: { fillColor: [248, 250, 252] },
     styles: { fontSize: 10, cellPadding: 4 },
     columnStyles: { 0: { fontStyle: 'bold' } },
@@ -60,7 +63,7 @@ export function exportPDF() {
     startY: deptY + 5,
     head: [['Departamento', 'Custo', '% do Total']],
     body: deptRows,
-    headStyles: { fillColor: [29, 78, 216], textColor: 255, fontStyle: 'bold' },
+    headStyles: { fillColor: [10, 74, 113], textColor: 255, fontStyle: 'bold' },
     alternateRowStyles: { fillColor: [248, 250, 252] },
     styles: { fontSize: 10, cellPadding: 4 },
     margin: { left: 14, right: 14 },
@@ -73,7 +76,7 @@ export function exportPDF() {
   doc.setFontSize(8)
   doc.setFont('helvetica', 'normal')
   doc.setTextColor(100)
-  doc.text('CorpFinance — Sistema Financeiro Corporativo | Documento gerado automaticamente', 14, pageH - 4)
+  doc.text('StartSolidarium — Sistema Financeiro Corporativo | Documento gerado automaticamente', 14, pageH - 4)
 
   doc.save(`relatorio-financeiro-${new Date().toISOString().slice(0,10)}.pdf`)
 }

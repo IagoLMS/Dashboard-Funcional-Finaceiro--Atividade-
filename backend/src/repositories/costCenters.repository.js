@@ -8,7 +8,7 @@ function parse(center) {
 }
 
 export const costCentersRepository = {
-  findAll:  async ()    => (await prisma.costCenter.findMany()).map(parse),
+  findAll: async ()  => { const list = await prisma.costCenter.findMany({ orderBy: { name: 'asc' } }); return list.map(parse); },
   findById: async (id)  => { const c = await prisma.costCenter.findUnique({ where: { id } }); return c ? parse(c) : null; },
 
   create: async (data) => {

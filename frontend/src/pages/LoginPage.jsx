@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Lock, LogIn, Mail, ShieldCheck, TrendingUp, User, Wallet } from 'lucide-react';
+import { Lock, LogIn, ShieldCheck, TrendingUp, User, Wallet } from 'lucide-react';
 
 import logo from '../assets/logotype/logo_reduced.png';
 import logoLight from '../assets/logotype/logo_reduced_light.png';

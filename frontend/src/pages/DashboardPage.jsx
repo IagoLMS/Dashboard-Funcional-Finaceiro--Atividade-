@@ -2,12 +2,13 @@ import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
-import { exportPDF }         from '../utils/pdfExport';
-import { useAuth }            from '../context/AuthContext';
-import { Download, FolderDown, FolderUp, Info } from 'lucide-react';
-import { useDashboardKpis }   from '../hooks/useDashboardKpis.js';
-import DataSourceToggle        from '../components/DataSourceToggle.jsx';
-import { useDataSource }       from '../context/DataSourceContext.jsx';
+import { Download, Info } from 'lucide-react';
+import { exportPDF } from '../utils/pdfExport';
+import { useAuth } from '../context/AuthContext';
+import { useDashboardKpis } from '../hooks/useDashboardKpis.js';
+import { useDataSource } from '../context/DataSourceContext.jsx';
+
+import DataSourceToggle from '../components/DataSourceToggle.jsx';
 
 const DEPT_COLORS = ['#1b9d46', '#047fa1', '#F0992D', '#925BEC'];
 
